@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:fourzerofour/main.dart';
 import 'package:rive/rive.dart';
@@ -7,29 +6,10 @@ import 'package:rive/rive.dart';
 class Hunter extends StatefulWidget {
   const Hunter({
     super.key,
-    // required this.side,
-    // required this.color,
-    // required this.top,
-    // required this.left,
-    // required this.speed,
-    // required this.updateTargetBoardPosition,
-    // required this.index,
-    // required this.hitCount,
-    // required this.assetPath,
-    // required this.hitted,
+    required this.getKlick,
   });
 
-  // final double side;
-
-  // final Color color;
-  // final double top;
-  // final double left;
-  // final double speed;
-  // final Function updateTargetBoardPosition;
-  // final int index;
-  // final int hitCount;
-  // final String assetPath;
-  // final bool hitted;
+  final Function(SMIInput<bool>?) getKlick;
 
   @override
   State<Hunter> createState() => _HunterState();
@@ -56,16 +36,24 @@ class _HunterState extends State<Hunter> {
     super.initState();
   }
 
-  SMITrigger? _bump;
+  SMIInput<bool>? klick;
 
   void _onRiveInit(Artboard artboard) {
     final controller =
-        StateMachineController.fromArtboard(artboard, 'Artboard');
-    artboard.addController(controller!);
-    _bump = controller.getTriggerInput('bump');
+        StateMachineController.fromArtboard(artboard, 'State Machine 1');
+    if (controller != null) {
+      artboard.addController(controller);
+
+      // Initialize the SMIInputs
+      klick = controller.findInput<bool>('Klick');
+      widget.getKlick.call(klick);
+      triggerKlick();
+    }
   }
 
-  void _hitBump() => _bump?.fire();
+  void triggerKlick() {
+    klick?.value = true;
+  }
 
   @override
   void dispose() {
