@@ -56,6 +56,17 @@ class _HunterState extends State<Hunter> {
     super.initState();
   }
 
+  SMITrigger? _bump;
+
+  void _onRiveInit(Artboard artboard) {
+    final controller =
+        StateMachineController.fromArtboard(artboard, 'Artboard');
+    artboard.addController(controller!);
+    _bump = controller.getTriggerInput('bump');
+  }
+
+  void _hitBump() => _bump?.fire();
+
   @override
   void dispose() {
     timer?.cancel();
@@ -97,12 +108,13 @@ class _HunterState extends State<Hunter> {
     return Positioned(
       left: left,
       top: top,
-      child: const SizedBox(
+      child: SizedBox(
         height: 160,
         width: 110,
         child: RiveAnimation.asset(
           'assets/Robi.riv',
           fit: BoxFit.cover,
+          onInit: _onRiveInit,
         ),
       ),
     );
