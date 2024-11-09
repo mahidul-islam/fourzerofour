@@ -1,19 +1,7 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
@@ -27,12 +15,92 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="icon" type="image/png" href="favicon.png" />
 
   <title>fourzerofour</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    .loader-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      position: fixed;
+      background: #1a1a1a;
+      z-index: 999;
+      transition: opacity 0.3s ease-out;
+    }
+
+    .loader {
+      width: 48px;
+      height: 48px;
+      border: 5px solid #FFF;
+      border-bottom-color: #FF3D00;
+      border-radius: 50%;
+      animation: rotation 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    .loading-text {
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      letter-spacing: 2px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes rotation {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .loader-container.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
 </head>
-<body>
+
+<body style="overflow: hidden">
+  <div id="loader" class="loader-container">
+    <div class="loader"></div>
+    <div class="loading-text">LOADING...</div>
+  </div>
   <script src="flutter_bootstrap.js" async></script>
+  <script>
+    // Add event listener for flutter-first-frame message
+    window.addEventListener('flutter-first-frame', function () {
+      var loadingIndicator = document.getElementById('loader');
+      if (loadingIndicator) {
+        // First add the hidden class for smooth transition
+        loadingIndicator.classList.add('hidden');
+        // Then remove the element after transition completes
+        setTimeout(() => {
+          loadingIndicator.remove();
+        }, 300); // 300ms matches the CSS transition duration
+      }
+    });
+  </script>
 </body>
+
 </html>

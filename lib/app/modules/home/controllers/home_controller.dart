@@ -39,8 +39,8 @@ class HomeController extends GetxController {
     hunterLeft.value = 20;
     hunterTop.value = 20;
 
-    huntedLeft.value = Get.width - 120;
-    huntedTop.value = Get.height - 180;
+    huntedLeft.value = Get.width / 2;
+    huntedTop.value = Get.height / 2;
     timer = Timer.periodic(
         const Duration(milliseconds: 1000 ~/ FRAME_PER_SECOND), (Timer timer) {
       updateHunterPosition(100);
@@ -123,6 +123,8 @@ class HomeController extends GetxController {
     final double scareDistance = size.width / 3;
     final double safeDistance = size.width / 2;
 
+    double speedMultiplier = 1.0;
+
     // Calculate distance between hunter and hunted
     double dx = hunterLeft.value - huntedLeft.value;
     double dy = hunterTop.value - huntedTop.value;
@@ -130,8 +132,7 @@ class HomeController extends GetxController {
 
     // If hunter is too far, stop flee
     if (distance > safeDistance) {
-      // triggerHuntedKlick();
-      return;
+      speedMultiplier = 0.2;
     }
 
     if (distance < scareDistance) {
@@ -164,8 +165,8 @@ class HomeController extends GetxController {
       huntedDirectionY = sin(huntedAngle).sign.toInt();
 
       // Calculate actual movement using the angle
-      double speedMultiplier = 1.0;
-      if (distance < scareDistance / 2) {
+
+      if (distance < (scareDistance / 2)) {
         speedMultiplier = 1.5; // Boost speed when very close
       }
 
