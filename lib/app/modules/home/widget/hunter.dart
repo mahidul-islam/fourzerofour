@@ -13,21 +13,37 @@ class Hunter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       return Positioned(
-        left: controller.hunterLeft.value,
-        top: controller.hunterTop.value,
-        child: Transform(
+        // Adjust position to center the circle around the hunter
+        left: controller.hunterLeft.value - (Get.width / 3 - 55),
+        top: controller.hunterTop.value - (Get.width / 3 - 80),
+        child: Stack(
           alignment: Alignment.center,
-          transform: Matrix4.identity()
-            ..rotateY(controller.hunterDirectionX >= 0 ? 0 : pi),
-          child: SizedBox(
-            height: 160,
-            width: 110,
-            child: RiveAnimation.asset(
-              'assets/Robi.riv',
-              fit: BoxFit.cover,
-              onInit: controller.onHunterRiveInit,
+          children: [
+            // Semi-transparent circle
+            Container(
+              width: Get.width / 3 * 2,
+              height: Get.width / 3 * 2,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFFFFF4CC).withOpacity(0.3),
+              ),
             ),
-          ),
+            // Hunter character
+            Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.identity()
+                ..rotateY(controller.hunterDirectionX >= 0 ? 0 : pi),
+              child: SizedBox(
+                height: 160,
+                width: 110,
+                child: RiveAnimation.asset(
+                  'assets/Robi.riv',
+                  fit: BoxFit.cover,
+                  onInit: controller.onHunterRiveInit,
+                ),
+              ),
+            ),
+          ],
         ),
       );
     });

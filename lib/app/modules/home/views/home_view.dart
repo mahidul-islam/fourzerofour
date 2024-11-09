@@ -11,18 +11,35 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          controller.triggerHunterKlick();
-        },
-        foregroundColor: Colors.amber,
-      ),
-      backgroundColor: Colors.black38,
+      backgroundColor:
+          Colors.transparent, // Set Scaffold background to transparent
       body: SizedBox.expand(
         child: Stack(
           children: [
-            Hunter(controller: controller),
-            Hunted(controller: controller),
+            // Gradient background
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xff333333)
+                        .withOpacity(0.5), // Darker charcoal at the top
+                    const Color(0xff555555)
+                        .withOpacity(0.3), // Lighter charcoal at the bottom
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ),
+            // Main content on top of the background
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Hunter(controller: controller),
+                  Hunted(controller: controller),
+                ],
+              ),
+            ),
           ],
         ),
       ),
