@@ -9,7 +9,7 @@ import 'package:rive/rive.dart';
 
 const FRAME_PER_SECOND = 30;
 const HUNTER_SPEED = 5;
-const HUNTED_SPEED = 10;
+const HUNTED_SPEED = 8;
 
 class HomeController extends GetxController {
   final random = Random();
