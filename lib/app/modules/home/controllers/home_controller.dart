@@ -121,7 +121,7 @@ class HomeController extends GetxController {
   void updateHuntedPosition(double containerWidth) {
     final Size size = Get.size;
     final double scareDistance = size.width / 3;
-    final double safeDistance = 2 * size.width / 3;
+    final double safeDistance = size.width / 2;
 
     // Calculate distance between hunter and hunted
     double dx = hunterLeft.value - huntedLeft.value;
