@@ -12,6 +12,9 @@ const HUNTER_SPEED = 5;
 const HUNTED_SPEED = 10;
 
 class HomeController extends GetxController {
+  final random = Random();
+  double huntedAngle = 0.0; // Current angle of movement
+
   SMIInput<bool>? hunterKlick;
   SMIInput<bool>? huntedKlick;
 
@@ -55,7 +58,6 @@ class HomeController extends GetxController {
 
       // Initialize the SMIInputs
       hunterKlick = controller.findInput<bool>('Klick');
-      // widget.getKlick.call(klick);
       triggerHunterKlick();
     }
   }
@@ -68,7 +70,6 @@ class HomeController extends GetxController {
 
       // Initialize the SMIInputs
       huntedKlick = controller.findInput<bool>('Klick');
-      // widget.getKlick.call(klick);
       triggerHuntedKlick();
     }
   }
@@ -120,7 +121,6 @@ class HomeController extends GetxController {
   void updateHuntedPosition(double containerWidth) {
     final Size size = Get.size;
     final double scareDistance = size.width / 3;
-
     final double safeDistance = 2 * size.width / 3;
 
     // Calculate distance between hunter and hunted
@@ -130,22 +130,52 @@ class HomeController extends GetxController {
 
     // If hunter is too far, stop flee
     if (distance > safeDistance) {
-      triggerHuntedKlick();
+      // triggerHuntedKlick();
       return;
     }
 
-    // If hunter is too close, adjust direction to flee
     if (distance < scareDistance) {
-      // Calculate unit vector pointing from hunter to hunted
-      double unitX = dx / distance;
-      double unitY = dy / distance;
+      // Calculate base angle away from hunter
+      double baseAngle = atan2(-dy, -dx);
 
-      // Set direction opposite to hunter's position
-      huntedDirectionX = unitX > 0 ? -1 : 1;
-      huntedDirectionY = unitY > 0 ? -1 : 1;
+      // Add random deviation (-π/4 to π/4, or -45° to +45°)
+      double randomDeviation = (random.nextDouble() - 0.5) * pi / 2;
 
-      // Trigger scared animation if implemented
-      triggerHuntedKlick();
+      // If near wall, adjust angle to move away from it
+      final wallMargin = containerWidth * 1.5;
+      if (huntedLeft.value < wallMargin) {
+        baseAngle = baseAngle.abs(); // Move right
+      } else if (huntedLeft.value > size.width - wallMargin) {
+        baseAngle = pi - baseAngle.abs(); // Move left
+      }
+      if (huntedTop.value < wallMargin) {
+        baseAngle =
+            (baseAngle < 0 ? -pi / 2 : pi / 2) + (baseAngle / 2); // Move down
+      } else if (huntedTop.value > size.height - wallMargin) {
+        baseAngle =
+            (baseAngle < 0 ? -pi / 2 : pi / 2) - (baseAngle / 2); // Move up
+      }
+
+      // Set new movement angle with smooth transition
+      huntedAngle = baseAngle + randomDeviation;
+
+      // Convert angle to directions
+      huntedDirectionX = cos(huntedAngle).sign.toInt();
+      huntedDirectionY = sin(huntedAngle).sign.toInt();
+
+      // Calculate actual movement using the angle
+      double speedMultiplier = 1.0;
+      if (distance < scareDistance / 2) {
+        speedMultiplier = 1.5; // Boost speed when very close
+      }
+
+      huntedLeft.value += HUNTED_SPEED * speedMultiplier * cos(huntedAngle);
+      huntedTop.value += HUNTED_SPEED * speedMultiplier * sin(huntedAngle);
+
+      // Trigger scared animation
+      // triggerHuntedKlick();
+
+      return;
     }
 
     // Check screen boundaries and bounce
@@ -171,7 +201,7 @@ class HomeController extends GetxController {
       }
     }
 
-    // Update position with current direction and speed
+    // Regular movement when hunter is not too close
     huntedLeft.value = huntedLeft.value + (HUNTED_SPEED * huntedDirectionX);
     huntedTop.value = huntedTop.value + (HUNTED_SPEED * huntedDirectionY);
   }
